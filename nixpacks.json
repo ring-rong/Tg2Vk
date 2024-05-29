@@ -1,0 +1,19 @@
+{
+  "phases": {
+    "setup": {
+      "nix": ["python3", "gcc"]
+    },
+    "install": {
+      "cmds": [
+        "python -m venv --copies /opt/venv",
+        ". /opt/venv/bin/activate",
+        "pip install -r requirements.txt"
+      ]
+    },
+    "start": {
+      "cmds": [
+        "python app.py"
+      ]
+    }
+  }
+}
