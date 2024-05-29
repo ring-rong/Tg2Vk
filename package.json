@@ -1,1 +1,10 @@
-web: python app.py
+{
+  "name": "tg2vk",
+  "version": "1.0.0",
+  "description": "bot",
+  "main": "app.py",
+  "scripts": {
+    "start": "python app.py"
+  },
+  "dependencies": {}
+}
