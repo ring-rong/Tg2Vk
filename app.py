@@ -335,6 +335,15 @@ async def animation_handler(message: Message):
             else:
                 logging.error(f'Failed to download animation {message.animation.file_id} after {retries} attempts')
 
+async def send_working_message():
+    while True:
+        try:
+            await bot.send_message(chat_id=YOUR_CHAT_ID, text="Bot is working")
+            await asyncio.sleep(30)
+        except Exception as e:
+            logging.error(f'Error sending working message: {e}')
+
+
 async def main():
     dp.channel_post.register(album_handler, MediaGroupFilter())
     dp.channel_post.register(photo_video_handler, F.content_type.in_([ContentType.PHOTO, ContentType.VIDEO]))
@@ -346,6 +355,7 @@ async def main():
     dp.channel_post.register(animation_handler, F.content_type == ContentType.ANIMATION)
     dp.channel_post.register(voice_handler, F.content_type == ContentType.VOICE)
     dp.edited_channel_post.register(edited_handler)
+    asyncio.create_task(send_working_message())
     await dp.start_polling(bot)
 
 if __name__ == '__main__':
