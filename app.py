@@ -2,13 +2,11 @@ import logging
 import os
 import sys
 import aiogram
-import aiohttp.web
 import random
 import asyncio
 from typing import List
 from requests.exceptions import ConnectionError
 
-from asyncio import create_task, sleep
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import ContentType, Message
@@ -337,27 +335,7 @@ async def animation_handler(message: Message):
             else:
                 logging.error(f'Failed to download animation {message.animation.file_id} after {retries} attempts')
 
-async def log_bot_status():
-    while True:
-        logging.info('Bot is working...')
-        await sleep(30)
-
-
-async def handle(request):
-    return aiohttp.web.Response(text="Hello, world")
-
-async def start_web_server():
-    port = int(os.getenv('PORT', 49001))
-    app = aiohttp.web.Application()
-    app.router.add_get('/', handle)
-    runner = aiohttp.web.AppRunner(app)
-    await runner.setup()
-    site = aiohttp.web.TCPSite(runner, '0.0.0.0', port)
-    await site.start()
-    logging.info(f'Web server started on port {port}')
-
 async def main():
-    create_task(log_bot_status())
     dp.channel_post.register(album_handler, MediaGroupFilter())
     dp.channel_post.register(photo_video_handler, F.content_type.in_([ContentType.PHOTO, ContentType.VIDEO]))
     dp.channel_post.register(document_handler, F.content_type == ContentType.DOCUMENT)
@@ -368,7 +346,6 @@ async def main():
     dp.channel_post.register(animation_handler, F.content_type == ContentType.ANIMATION)
     dp.channel_post.register(voice_handler, F.content_type == ContentType.VOICE)
     dp.edited_channel_post.register(edited_handler)
-    create_task(start_web_server())
 
     await dp.start_polling(bot)
 
