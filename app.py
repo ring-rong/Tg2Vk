@@ -2,7 +2,7 @@ import logging
 import os
 import sys
 import aiogram
-import socket
+import aiohttp.web
 import random
 import asyncio
 from typing import List
@@ -342,12 +342,19 @@ async def log_bot_status():
         logging.info('Bot is working...')
         await sleep(30)
 
-def get_free_port():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind(('', 0))
-        s.listen(1)
-        port = s.getsockname()[1]
-    return port
+
+async def handle(request):
+    return aiohttp.web.Response(text="Hello, world")
+
+async def start_web_server():
+    port = int(os.getenv('PORT', 49001))
+    app = aiohttp.web.Application()
+    app.router.add_get('/', handle)
+    runner = aiohttp.web.AppRunner(app)
+    await runner.setup()
+    site = aiohttp.web.TCPSite(runner, '0.0.0.0', port)
+    await site.start()
+    logging.info(f'Web server started on port {port}')
 
 async def main():
     create_task(log_bot_status())
@@ -361,7 +368,7 @@ async def main():
     dp.channel_post.register(animation_handler, F.content_type == ContentType.ANIMATION)
     dp.channel_post.register(voice_handler, F.content_type == ContentType.VOICE)
     dp.edited_channel_post.register(edited_handler)
-    free_port = get_free_port()
+    create_task(start_web_server())
     logging.info(f"Free port available: {free_port}")
 
     await dp.start_polling(bot)
