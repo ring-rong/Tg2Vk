@@ -75,9 +75,10 @@
    Создайте файл `.env` в корне проекта и добавьте необходимые переменные окружения. Пример файла `.env`:
 
    ```env
-   TELEGRAM_API_TOKEN=your_telegram_api_token
-   VK_ACCESS_TOKEN=your_vk_access_token
-   VK_GROUP_ID=your_vk_group_id
+   VK_API_TOKEN=YOUR_VK_API_TOKEN
+   TELEGRAM_API_TOKEN=YOUR_TELEGRAM_API_TOKEN
+   TELEGRAM_CHANNEL_USERNAME=YOUR_TELEGRAM_CHANNEL_USERNAME
+   VK_GROUP_ID=YOUR_VK_GROUP_ID
    ```
 
 4. **Запуск приложения:**
@@ -180,9 +181,10 @@ Thus, Tg2Vk supports a wide range of media files, providing flexibility and conv
    Create a `.env` file in the project's root directory and add the necessary environment variables. Example of a `.env` file:
 
    ```env
-   TELEGRAM_API_TOKEN=your_telegram_api_token
-   VK_ACCESS_TOKEN=your_vk_access_token
-   VK_GROUP_ID=your_vk_group_id
+   VK_API_TOKEN=YOUR_VK_API_TOKEN
+   TELEGRAM_API_TOKEN=YOUR_TELEGRAM_API_TOKEN
+   TELEGRAM_CHANNEL_USERNAME=YOUR_TELEGRAM_CHANNEL_USERNAME
+   VK_GROUP_ID=YOUR_VK_GROUP_ID
    ```
 
 4. **Run the application:**
