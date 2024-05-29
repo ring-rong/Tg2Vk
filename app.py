@@ -1,5 +1,6 @@
 import logging
 import os
+import socket
 import sys
 import aiogram
 import random
@@ -336,12 +337,21 @@ async def animation_handler(message: Message):
             else:
                 logging.error(f'Failed to download animation {message.animation.file_id} after {retries} attempts')
 
+def open_random_port():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(('', 0))
+    addr, port = s.getsockname()
+    s.close()
+    logging.info(f'Random port {port} opened')
+    return port
+
 async def log_bot_status():
     while True:
         logging.info('Bot is working...')
         await sleep(30)
 
 async def main():
+    port = open_random_port()
     create_task(log_bot_status())
     dp.channel_post.register(album_handler, MediaGroupFilter())
     dp.channel_post.register(photo_video_handler, F.content_type.in_([ContentType.PHOTO, ContentType.VIDEO]))
