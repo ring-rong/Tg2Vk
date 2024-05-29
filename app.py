@@ -369,7 +369,6 @@ async def main():
     dp.channel_post.register(voice_handler, F.content_type == ContentType.VOICE)
     dp.edited_channel_post.register(edited_handler)
     create_task(start_web_server())
-    logging.info(f"Free port available: {free_port}")
 
     await dp.start_polling(bot)
 
