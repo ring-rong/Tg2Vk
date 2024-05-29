@@ -7,6 +7,7 @@ import asyncio
 from typing import List
 from requests.exceptions import ConnectionError
 
+from asyncio import create_task, sleep
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import ContentType, Message
@@ -335,16 +336,13 @@ async def animation_handler(message: Message):
             else:
                 logging.error(f'Failed to download animation {message.animation.file_id} after {retries} attempts')
 
-async def send_working_message():
+async def log_bot_status():
     while True:
-        try:
-            await bot.send_message(chat_id=YOUR_CHAT_ID, text="Bot is working")
-            await asyncio.sleep(30)
-        except Exception as e:
-            logging.error(f'Error sending working message: {e}')
-
+        logging.info('Bot is working...')
+        await sleep(30)
 
 async def main():
+    create_task(log_bot_status())
     dp.channel_post.register(album_handler, MediaGroupFilter())
     dp.channel_post.register(photo_video_handler, F.content_type.in_([ContentType.PHOTO, ContentType.VIDEO]))
     dp.channel_post.register(document_handler, F.content_type == ContentType.DOCUMENT)
@@ -355,7 +353,7 @@ async def main():
     dp.channel_post.register(animation_handler, F.content_type == ContentType.ANIMATION)
     dp.channel_post.register(voice_handler, F.content_type == ContentType.VOICE)
     dp.edited_channel_post.register(edited_handler)
-    asyncio.create_task(send_working_message())
+
     await dp.start_polling(bot)
 
 if __name__ == '__main__':
