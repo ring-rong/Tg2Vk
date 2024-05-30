@@ -1,5 +1,6 @@
 import logging
 import os
+import requests
 import sys
 import aiogram
 import random
@@ -30,10 +31,14 @@ VK_GROUP_ID = os.getenv('VK_GROUP_ID')
 vk_session = VkApi(token=VK_API_TOKEN)
 vk = vk_session.get_api()
 uploader = VkUpload(vk)
-bot = Bot(token=TELEGRAM_API_TOKEN)
+PROXY_URL = os.getenv('PROXY_URL')
+proxy = PROXY_URL
+proxies = {"http": proxy, "https": proxy}
+
+bot = Bot(token=TELEGRAM_API_TOKEN, proxy=proxies)
 storage = MemoryStorage()
 
-dp = Dispatcher(storage=storage)
+dp = Dispatcher(storage=storage, proxy=proxies)
 
 def add_entry(message_id, post_id):
     with open('data.txt', 'a') as f:
