@@ -6,7 +6,7 @@ from typing import List
 from requests.exceptions import ConnectionError
 
 from aiogram import Bot, Dispatcher, F, types
-from background.py import keep_alive
+from background import keep_alive
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import ContentType, Message
 from aiogram_media_group import MediaGroupFilter, media_group_handler
