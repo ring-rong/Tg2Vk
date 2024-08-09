@@ -1,13 +1,12 @@
 import logging
 import os
-import sys
-import aiogram
 import random
 import asyncio
 from typing import List
 from requests.exceptions import ConnectionError
 
 from aiogram import Bot, Dispatcher, F, types
+from background import keep_alive
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import ContentType, Message
 from aiogram_media_group import MediaGroupFilter, media_group_handler
@@ -348,7 +347,7 @@ async def main():
     dp.edited_channel_post.register(edited_handler)
 
     await dp.start_polling(bot)
-
+    
 if __name__ == '__main__':
     logging.info('Starting bot')
     asyncio.run(main())
