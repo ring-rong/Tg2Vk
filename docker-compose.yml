@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  tg2vk:
+    build: .
+    container_name: Tg2Vk
+    restart: always
+    environment:
+      - TELEGRAM_API_TOKEN=
+      - TELEGRAM_CHANNEL_USERNAME=
+      - VK_API_TOKEN=
+      - VK_GROUP_ID=
+    volumes:
+      - ./data:/app/data

@@ -1,13 +1,10 @@
 import logging
 import os
-import sys
-import aiogram
 import random
 import asyncio
-import nest_asyncio
 from typing import List
 from requests.exceptions import ConnectionError
-from IPython.display import display, Javascript
+
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import ContentType, Message
@@ -19,49 +16,14 @@ from vk_api.utils import get_random_id
 from PIL import Image, UnidentifiedImageError
 from rlottie_python import LottieAnimation
 from moviepy.editor import VideoFileClip
-from google.colab import userdata
 
 load_dotenv()
+logging.basicConfig(level=logging.INFO)
 
-# Function to display output in real-time in Jupyter/Colab
-def configure_real_time_logging():
-    from IPython.core.interactiveshell import InteractiveShell
-    InteractiveShell.ast_node_interactivity = "all"
-
-    # Javascript to force scroll output to the bottom
-    display(Javascript("""
-        function scrollToBottom() {
-            var outputArea = document.querySelector('.output_area');
-            if (outputArea) {
-                outputArea.scrollTop = outputArea.scrollHeight;
-            }
-        }
-        setInterval(scrollToBottom, 100);
-    """))
-
-configure_real_time_logging()
-
-# Configure logging to output to Jupyter/Colab notebook in real-time
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-# Clear existing handlers
-logger.handlers = []
-
-# StreamHandler to log to stdout (which is captured by Jupyter/Colab)
-stream_handler = logging.StreamHandler(sys.stdout)
-stream_handler.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-stream_handler.setFormatter(formatter)
-logger.addHandler(stream_handler)
-
-# Test the logging
-logger.info("Real-time logging configured.")
-
-TELEGRAM_API_TOKEN = userdata.get('TELEGRAM_API_TOKEN')
-TELEGRAM_CHANNEL_USERNAME = userdata.get('TELEGRAM_CHANNEL_USERNAME')
-VK_API_TOKEN = userdata.get('VK_API_TOKEN')
-VK_GROUP_ID = userdata.get('VK_GROUP_ID')
+TELEGRAM_API_TOKEN = os.getenv('TELEGRAM_API_TOKEN')
+TELEGRAM_CHANNEL_USERNAME = os.getenv('TELEGRAM_CHANNEL_USERNAME')
+VK_API_TOKEN = os.getenv('VK_API_TOKEN')
+VK_GROUP_ID = os.getenv('VK_GROUP_ID')
 
 vk_session = VkApi(token=VK_API_TOKEN)
 vk = vk_session.get_api()
@@ -206,7 +168,7 @@ async def album_handler(messages: List[Message]):
     message_id = messages[0].message_id
     post_text = text if text else ''
     await asyncio.to_thread(create_vk_post, post_text, message_id, photo_list, video_list, doc_list, audio_list, gif_list)
-
+    
     for path in photo_list + video_list + doc_list + audio_list + gif_list:
         os.remove(path)
 
@@ -371,11 +333,6 @@ async def animation_handler(message: Message):
             else:
                 logging.error(f'Failed to download animation {message.animation.file_id} after {retries} attempts')
 
-async def keep_session_alive():
-    while True:
-        logging.info("Bot is running...")
-        await asyncio.sleep(60)  # Выводим сообщение каждую минуту
-
 async def main():
     dp.channel_post.register(album_handler, MediaGroupFilter())
     dp.channel_post.register(photo_video_handler, F.content_type.in_([ContentType.PHOTO, ContentType.VIDEO]))
@@ -387,10 +344,9 @@ async def main():
     dp.channel_post.register(animation_handler, F.content_type == ContentType.ANIMATION)
     dp.channel_post.register(voice_handler, F.content_type == ContentType.VOICE)
     dp.edited_channel_post.register(edited_handler)
-    asyncio.create_task(keep_session_alive())
-    await dp.start_polling(bot)
 
+    await dp.start_polling(bot)
+    
 if __name__ == '__main__':
     logging.info('Starting bot')
-    nest_asyncio.apply()
     asyncio.run(main())
